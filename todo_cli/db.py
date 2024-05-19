@@ -42,8 +42,10 @@ class DB:
         with open(self.db_path, "r") as db:
             logger.debug(f"Load database from {self.db_path}")
             json_tasks = json.load(db)
-            for task in json_tasks:
-                self.tasks.append(Task(*task))
+            for json_task in json_tasks:
+                task = Task(**json_task)
+                logger.debug(f"Found task {task}")
+                self.tasks.append(task)
             logger.debug(f"Database loaded with {len(self.tasks)} Tasks.")
 
     def add(self, text: str) -> None:
