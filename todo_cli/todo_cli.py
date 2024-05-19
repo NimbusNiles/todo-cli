@@ -2,9 +2,14 @@
 
 import argparse
 
+from todo_cli.utils import log
+
+logger = log.get_logger(__name__)
+
 
 def print_hello() -> None:
     """Print hello world."""
+    logger.info("Say hello.")
     print("Hello world!")
 
 
