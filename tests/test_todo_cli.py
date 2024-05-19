@@ -1,6 +1,6 @@
 """Tests for the ToDo CLI."""
 
-from todo import todo_cli
+from todo_cli import todo_cli
 
 
 def test_hello(capsys) -> None:
