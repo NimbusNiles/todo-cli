@@ -1,15 +1,23 @@
 """Class to represent ToDo items."""
 
 from dataclasses import dataclass
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
+from sqlalchemy.orm import Mapped, mapped_column
+
+
+class Base(DeclarativeBase, MappedAsDataclass):
+    """Base class for the database."""
 
 
 @dataclass
-class Task:
+class Task(Base):
     """Class representing a single task on the todo list."""
 
-    position: int
-    text: str
-    status: str = "To do"
+    __tablename__ = "task"
+
+    position: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    status: Mapped[str] = mapped_column(default="To Do")
 
     def pretty_string(self) -> str:
         return f"│ {self.position}  {self.text:50} {self.status:^11} │"
