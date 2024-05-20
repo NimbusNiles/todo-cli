@@ -10,3 +10,6 @@ class Task:
     position: int
     text: str
     status: str = "To do"
+
+    def pretty_string(self) -> str:
+        return f"│ {self.position}  {self.text:50} {self.status:^11} │"
