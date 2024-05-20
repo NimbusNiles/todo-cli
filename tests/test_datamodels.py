@@ -15,4 +15,4 @@ def test_task_init(task: Task) -> None:
     assert isinstance(task, Task)
     assert task.position == 1
     assert task.text == "Test"
-    assert task.status == "To do"
+    assert task.status == "To Do"
