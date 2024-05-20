@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "todo-cli"
-version = "0.1.0"
+version = "0.2.0"
 description = "CLI app to track a todo list"
 authors = ["NimbusNiles <29178202+NimbusNiles@users.noreply.github.com>"]
 readme = "README.md"
