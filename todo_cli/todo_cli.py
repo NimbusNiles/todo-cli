@@ -9,49 +9,50 @@ from todo_cli.utils import log
 logger = log.get_logger(__name__)
 
 
-def print_hello() -> None:
+def print_hello(debug: int = 0) -> None:
     """Print hello world."""
-    logger.debug("Say hello.")
+    logger.debug(f"Say hello with debug level: {debug}.")
     print("Hello world!")
 
 
-def add_task(text: str, debug: bool) -> None:
+def add_task(text: str, debug: int) -> None:
     """Add new task to todo list."""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     db.add(text=text)
 
 
-def remove_task(positions: list[int], debug: bool) -> None:
+def remove_task(positions: list[int], debug: int) -> None:
     """Remove a task from the todo list."""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     db.remove(positions=positions)
 
 
-def start_task(positions: list[int], debug: bool) -> None:
+def start_task(positions: list[int], debug: int) -> None:
     """Complete a task from the todo list."""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     db.set_status(positions, status="In progress")
 
 
-def stop_task(positions: list[int], debug: bool) -> None:
+def stop_task(positions: list[int], debug: int) -> None:
     """Complete a task from the todo list."""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     db.set_status(positions, status="To Do")
 
 
-def complete_task(positions: list[int], debug: bool) -> None:
+def complete_task(positions: list[int], debug: int) -> None:
     """Complete a task from the todo list."""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     db.set_status(positions, status="Done!")
 
 
-def show_list(debug: bool) -> None:
+def show_list(debug: int) -> None:
     """Show list of todo items"""
-    db = DB(debug=int(debug))
+    db = DB(debug=debug)
     print("╭" + "─" * 67 + "╮")
-    if db.tasks == []:
+    tasks = db.get_all_tasks()
+    if tasks == []:
         print(f"│{'(empty)':^67}│")
-    for task in db.tasks:
+    for task in tasks:
         print(task.pretty_string())
     print("╰" + "─" * 67 + "╯")
 
@@ -62,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "-hi", "--hello", help="Print hello world.", action="store_true"
     )
-    parser.add_argument("-d", help="Debug", action="store_true")
+    parser.add_argument("-d", help="Debug", action="count", default=0)
     parser.add_argument("-add", help="Add a new task.")
     parser.add_argument("-remove", help="Remove a task by id.", type=int, nargs="*")
     parser.add_argument("-start", help="Start task by id.", type=int, nargs="*")
@@ -77,7 +78,7 @@ def main(argv: list[str] | None = None) -> None:
         logger.setLevel(logging.INFO)
 
     if args.hello:
-        print_hello()
+        print_hello(args.d)
         return
 
     if args.add:
