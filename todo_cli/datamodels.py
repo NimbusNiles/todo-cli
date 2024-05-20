@@ -16,7 +16,8 @@ class Task(Base):
 
     __tablename__ = "task"
 
-    position: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    position: Mapped[int]
     text: Mapped[str]
     status: Mapped[str] = mapped_column(default="To Do")
 
