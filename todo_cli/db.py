@@ -73,6 +73,13 @@ class DB:
             tasks.append(task)
         self.tasks = tasks
 
+    def set_status(self, positions: list[int], status: str) -> None:
+        """Set status of a task."""
+        logger.debug(f"Set status of tasks {positions} to {status}.")
+        for position in positions:
+            self.tasks[position - 1].status = status
+        self.save()
+
     def save(self) -> None:
         """Save the database to disk."""
         with open(self.db_path, "w") as db:
