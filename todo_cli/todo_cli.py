@@ -49,6 +49,8 @@ def show_list(debug: bool) -> None:
     """Show list of todo items"""
     db = DB(debug=int(debug))
     print("╭" + "─" * 67 + "╮")
+    if db.tasks == []:
+        print(f"│{'(empty)':^67}│")
     for task in db.tasks:
         print(task.pretty_string())
     print("╰" + "─" * 67 + "╯")
