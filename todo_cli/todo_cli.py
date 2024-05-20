@@ -21,6 +21,12 @@ def add_task(text: str, debug: bool) -> None:
     db.add(text=text)
 
 
+def remove_task(positions: list[int], debug: bool) -> None:
+    """Remove a task from the todo list."""
+    db = DB(debug=int(debug))
+    db.remove(positions=positions)
+
+
 def show_list(debug: bool) -> None:
     """Show list of todo items"""
     db = DB(debug=int(debug))
@@ -36,8 +42,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "-hi", "--hello", help="Print hello world.", action="store_true"
     )
-    parser.add_argument("-add", help="Add a new task.")
     parser.add_argument("-d", help="Debug", action="store_true")
+    parser.add_argument("-add", help="Add a new task.")
+    parser.add_argument("-remove", help="Remove a task by id.", type=int, nargs="*")
 
     args = parser.parse_args(argv)
 
@@ -52,6 +59,9 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.add:
         add_task(args.add, debug=args.d)
+
+    if args.remove:
+        remove_task(args.remove, debug=args.d)
 
     show_list(args.d)
 
