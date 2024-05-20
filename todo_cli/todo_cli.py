@@ -24,8 +24,10 @@ def add_task(text: str, debug: bool) -> None:
 def show_list(debug: bool) -> None:
     """Show list of todo items"""
     db = DB(debug=int(debug))
+    print("╭" + "─" * 70 + "╮")
     for task in db.tasks:
         print(task)
+    print("╰" + "─" * 70 + "╯")
 
 
 def main(argv: list[str] | None = None) -> None:
