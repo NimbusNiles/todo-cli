@@ -36,24 +36,6 @@ class DB:
         Base.metadata.create_all(engine)
         self.Session = sessionmaker(bind=engine)
 
-    def load_db(self) -> None:
-        """Load the database."""
-        self.tasks = []
-        if not os.path.exists(self.db_path):
-            logger.info(
-                f"Database file {self.db_path} not found, empty database loaded."
-            )
-            return
-
-        with open(self.db_path, "r") as db:
-            logger.debug(f"Load database from {self.db_path}")
-            json_tasks = json.load(db)
-            for json_task in json_tasks:
-                task = Task(**json_task)
-                logger.debug(f"Found task {task}")
-                self.tasks.append(task)
-            logger.debug(f"Database loaded with {len(self.tasks)} Tasks.")
-
     def get_all_tasks(self) -> list[Task]:
         """Get all tasks from the database."""
         with self.Session.begin() as session:
@@ -91,12 +73,9 @@ class DB:
     def set_status(self, positions: list[int], status: str) -> None:
         """Set status of a task."""
         logger.debug(f"Set status of tasks {positions} to {status}.")
-        for position in positions:
-            self.tasks[position - 1].status = status
-        self.save()
-
-    def save(self) -> None:
-        """Save the database to disk."""
-        with open(self.db_path, "w") as db:
-            logger.debug(f"Save {len(self.tasks)} tasks to {self.db_path}.")
-            json.dump(self.tasks, db, indent=2, cls=EnhancedJSONEncoder)
+        with self.Session.begin() as session:
+            tasks_to_change = (
+                session.query(Task).filter(Task.position.in_(positions)).all()
+            )
+            for task in tasks_to_change:
+                task.status = status
