@@ -55,6 +55,24 @@ class DB:
         self.tasks.append(task)
         self.save()
 
+    def remove(self, positions: list[int]) -> None:
+        """Remove a task from the database."""
+        logger.debug(f"Remove task at positions {positions}.")
+        positions.sort(reverse=True)
+        for ind in positions:
+            del self.tasks[ind - 1]
+        self.reposition()
+        self.save()
+
+    def reposition(self) -> None:
+        """Reassign positions for all tasks."""
+        logger.debug(f"Reposition tasks.")
+        tasks = []
+        for ind, task in enumerate(self.tasks):
+            task.position = ind + 1
+            tasks.append(task)
+        self.tasks = tasks
+
     def save(self) -> None:
         """Save the database to disk."""
         with open(self.db_path, "w") as db:
