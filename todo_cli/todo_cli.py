@@ -45,6 +45,12 @@ def complete_task(positions: list[int], debug: int) -> None:
     db.set_status(positions, status="Done!")
 
 
+def add_subtask(position: int, text: str, debug: int) -> None:
+    """Add subtask to a task in the todo list."""
+    db = DB(debug=debug)
+    db.add_subtask(position=position, text=text)
+
+
 def show_list(debug: int) -> None:
     """Show list of todo items"""
     db = DB(debug=debug)
@@ -65,6 +71,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument("-d", help="Debug", action="count", default=0)
     parser.add_argument("-add", help="Add a new task.")
+    parser.add_argument("-addsub", help="Add a new subtask.", nargs=2)
     parser.add_argument("-remove", help="Remove a task by id.", type=int, nargs="*")
     parser.add_argument("-start", help="Start task by id.", type=int, nargs="*")
     parser.add_argument("-stop", help="Stop task by id.", type=int, nargs="*")
@@ -93,6 +100,11 @@ def main(argv: list[str] | None = None) -> None:
         stop_task(args.stop, debug=args.d)
     if args.complete:
         complete_task(args.complete, debug=args.d)
+
+    if args.addsub:
+        task_position = args.addsub[0]
+        subtask_text = args.addsub[1]
+        add_subtask(task_position, subtask_text, debug=args.d)
 
     show_list(args.d)
 

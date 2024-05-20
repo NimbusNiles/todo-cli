@@ -6,7 +6,7 @@ import os
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, Session
 
-from todo_cli.datamodels import Task, Base
+from todo_cli.datamodels import Subtask, Task, Base
 from todo_cli.utils import log
 from todo_cli.utils.json_encoder import EnhancedJSONEncoder
 
@@ -52,6 +52,27 @@ class DB:
         logger.debug(f"Add task {task} to the database.")
         with self.Session.begin() as session:
             session.add(task)
+
+    def add_subtask(self, position: int, text: str):
+        """Add subtask to a todo list item."""
+        with self.Session.begin() as session:
+
+            task = session.query(Task).where(Task.position == position).first()
+            if task is None:
+                logger.error(f"No task with position {position} found.")
+                return
+
+            subposition = len(task.subtasks) + 1
+
+            logger.debug(f"Found task at position {position}: {task.text}.")
+            logger.debug(f"Task has {len(task.subtasks)} subtasks.")
+
+            subtask = Subtask(
+                position=subposition, text=text, task=task, task_id=task.id
+            )
+
+            logger.debug(f"Add subtask to task {position} at subposition {subposition}")
+            task.subtasks.append(subtask)
 
     def remove(self, positions: list[int]) -> None:
         """Remove a task from the database."""
