@@ -19,7 +19,7 @@ def get_console_handler() -> logging.StreamHandler:
 def get_file_handler() -> logging.FileHandler:
     """Return a file handler to logging file."""
     create_logging_folder_if_needed()
-    handler = TimedRotatingFileHandler(FILE, when="midnight", backupCount=5)
+    handler = TimedRotatingFileHandler(FILE, when="midnight", backupCount=5, delay=True)
     handler.setFormatter(FORMAT)
     return handler
 
