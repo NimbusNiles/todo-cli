@@ -27,6 +27,24 @@ def remove_task(positions: list[int], debug: bool) -> None:
     db.remove(positions=positions)
 
 
+def start_task(positions: list[int], debug: bool) -> None:
+    """Complete a task from the todo list."""
+    db = DB(debug=int(debug))
+    db.set_status(positions, status="In progress")
+
+
+def stop_task(positions: list[int], debug: bool) -> None:
+    """Complete a task from the todo list."""
+    db = DB(debug=int(debug))
+    db.set_status(positions, status="To Do")
+
+
+def complete_task(positions: list[int], debug: bool) -> None:
+    """Complete a task from the todo list."""
+    db = DB(debug=int(debug))
+    db.set_status(positions, status="Done!")
+
+
 def show_list(debug: bool) -> None:
     """Show list of todo items"""
     db = DB(debug=int(debug))
@@ -45,6 +63,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("-d", help="Debug", action="store_true")
     parser.add_argument("-add", help="Add a new task.")
     parser.add_argument("-remove", help="Remove a task by id.", type=int, nargs="*")
+    parser.add_argument("-start", help="Start task by id.", type=int, nargs="*")
+    parser.add_argument("-stop", help="Stop task by id.", type=int, nargs="*")
+    parser.add_argument("-complete", help="Complete task by id.", type=int, nargs="*")
 
     args = parser.parse_args(argv)
 
@@ -62,6 +83,13 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.remove:
         remove_task(args.remove, debug=args.d)
+
+    if args.start:
+        start_task(args.start, debug=args.d)
+    if args.stop:
+        stop_task(args.stop, debug=args.d)
+    if args.complete:
+        complete_task(args.complete, debug=args.d)
 
     show_list(args.d)
 
