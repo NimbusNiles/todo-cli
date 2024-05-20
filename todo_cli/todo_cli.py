@@ -48,6 +48,7 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.hello:
         print_hello()
+        return
 
     if args.add:
         add_task(args.add, debug=args.d)
