@@ -3,8 +3,8 @@
 import json
 import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker, Session
 
 from todo_cli.datamodels import Task, Base
 from todo_cli.utils import log
@@ -74,20 +74,19 @@ class DB:
     def remove(self, positions: list[int]) -> None:
         """Remove a task from the database."""
         logger.debug(f"Remove task at positions {positions}.")
-        positions.sort(reverse=True)
-        for ind in positions:
-            del self.tasks[ind - 1]
-        self.reposition()
-        self.save()
+        with self.Session.begin() as session:
+            tasks_to_delete = (
+                session.query(Task).filter(Task.position.in_(positions)).all()
+            )
+            for task in tasks_to_delete:
+                session.delete(task)
+            self.reposition(session)
 
-    def reposition(self) -> None:
+    def reposition(self, session: Session) -> None:
         """Reassign positions for all tasks."""
         logger.debug(f"Reposition tasks.")
-        tasks = []
-        for ind, task in enumerate(self.tasks):
+        for ind, task in enumerate(session.query(Task).all()):
             task.position = ind + 1
-            tasks.append(task)
-        self.tasks = tasks
 
     def set_status(self, positions: list[int], status: str) -> None:
         """Set status of a task."""
