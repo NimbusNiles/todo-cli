@@ -3,7 +3,10 @@
 import json
 import os
 
-from todo_cli.datamodels import Task
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from todo_cli.datamodels import Task, Base
 from todo_cli.utils import log
 from todo_cli.utils.json_encoder import EnhancedJSONEncoder
 
@@ -13,7 +16,7 @@ logger = log.get_logger(__name__)
 class DB:
     """Class to represent the database."""
 
-    db_path = "data/db.json"
+    db_path = "data/todo.db"
     tasks: list[Task]
 
     def __init__(self, debug: int = 0) -> None:
@@ -28,7 +31,9 @@ class DB:
             logger.info(f"Database folder {folder} not found, created.")
             os.mkdir(folder)
 
-        self.load_db()
+        engine = create_engine(f"sqlite:///{self.db_path}", echo=bool(debug - 1))
+        Base.metadata.create_all(engine)
+        self.Session = sessionmaker(bind=engine)
 
     def load_db(self) -> None:
         """Load the database."""
@@ -48,12 +53,21 @@ class DB:
                 self.tasks.append(task)
             logger.debug(f"Database loaded with {len(self.tasks)} Tasks.")
 
+    def get_all_tasks(self) -> list[Task]:
+        """Get all tasks from the database."""
+        with self.Session.begin() as session:
+            logger.debug(f"Get all tasks.")
+            tasks = session.query(Task).all()
+        logger.debug(f"Found {len(tasks)} tasks in database.")
+        return tasks
+
     def add(self, text: str) -> None:
         """Add a task to the database."""
-        task = Task(position=len(self.tasks) + 1, text=text)
+        tasks = self.get_all_tasks()
+        task = Task(position=len(tasks) + 1, text=text)
         logger.debug(f"Add task {task} to the database.")
-        self.tasks.append(task)
-        self.save()
+        with self.Session.begin() as session:
+            session.add(task)
 
     def remove(self, positions: list[int]) -> None:
         """Remove a task from the database."""
