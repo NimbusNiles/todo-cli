@@ -3,7 +3,7 @@
 import json
 import os
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from todo_cli.datamodels import Task, Base
@@ -74,11 +74,12 @@ class DB:
     def remove(self, positions: list[int]) -> None:
         """Remove a task from the database."""
         logger.debug(f"Remove task at positions {positions}.")
-        positions.sort(reverse=True)
-        for ind in positions:
-            del self.tasks[ind - 1]
-        self.reposition()
-        self.save()
+        with self.Session.begin() as session:
+            tasks_to_delete = (
+                session.query(Task).filter(Task.position.in_(positions)).all()
+            )
+            for task in tasks_to_delete:
+                session.delete(task)
 
     def reposition(self) -> None:
         """Reassign positions for all tasks."""
