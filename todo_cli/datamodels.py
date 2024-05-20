@@ -5,11 +5,12 @@ from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-class Base(DeclarativeBase, MappedAsDataclass):
+class Base(MappedAsDataclass, DeclarativeBase):
     """Base class for the database."""
 
+    pass
 
-@dataclass
+
 class Task(Base):
     """Class representing a single task on the todo list."""
 
