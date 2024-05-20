@@ -31,7 +31,8 @@ class DB:
             logger.info(f"Database folder {folder} not found, created.")
             os.mkdir(folder)
 
-        engine = create_engine(f"sqlite:///{self.db_path}", echo=bool(debug - 1))
+        echo = True if debug == 2 else False
+        engine = create_engine(f"sqlite:///{self.db_path}", echo=echo)
         Base.metadata.create_all(engine)
         self.Session = sessionmaker(bind=engine)
 
@@ -56,6 +57,7 @@ class DB:
     def get_all_tasks(self) -> list[Task]:
         """Get all tasks from the database."""
         with self.Session.begin() as session:
+            session.expire_on_commit = False
             logger.debug(f"Get all tasks.")
             tasks = session.query(Task).all()
         logger.debug(f"Found {len(tasks)} tasks in database.")
