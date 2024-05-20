@@ -21,6 +21,13 @@ def add_task(text: str, debug: bool) -> None:
     db.add(text=text)
 
 
+def show_list(debug: bool) -> None:
+    """Show list of todo items"""
+    db = DB(debug=int(debug))
+    for task in db.tasks:
+        print(task)
+
+
 def main(argv: list[str] | None = None) -> None:
     """Main method parsing the arguments"""
     parser = argparse.ArgumentParser()
@@ -42,6 +49,8 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.add:
         add_task(args.add, debug=args.d)
+
+    show_list(args.d)
 
 
 if __name__ == "__main__":
