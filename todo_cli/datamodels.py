@@ -11,5 +11,5 @@ class Task:
     text: str
     status: str = "To do"
 
-    def __str__(self) -> str:
-        return f"│ {self.position}   " f"{self.text:50}   " f"{self.status:^11} │"
+    def pretty_string(self) -> str:
+        return f"│ {self.position}  {self.text:50} {self.status:^11} │"
